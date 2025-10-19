@@ -1,6 +1,6 @@
-package com.user.keycloak.repository;
+package com.user.app.repository;
 
-import com.user.keycloak.entity.User;
+import com.user.app.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

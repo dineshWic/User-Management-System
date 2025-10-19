@@ -1,6 +1,5 @@
-package com.user.keycloak.entity;
+package com.user.app.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

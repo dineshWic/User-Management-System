@@ -1,4 +1,4 @@
-package com.user.keycloak.dto;
+package com.user.app.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
