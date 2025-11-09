@@ -113,6 +113,27 @@ public class KeycloakService {
 
     }
 
+    public void logoutUser(String refreshToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+
+        String logoutUrl = tokenUri.replace("/token", "/logout");
+
+        restTemplate.exchange(
+                logoutUrl,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+    }
     
 
 }

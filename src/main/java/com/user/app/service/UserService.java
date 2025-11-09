@@ -9,6 +9,9 @@ import com.user.app.entity.User;
 import com.user.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -58,8 +61,40 @@ public class UserService {
                 .tokenType((String) tokenResponse.get("token_type"))
                 .user(mapToUserResponse(user))
                 .build();
+    }
+
+    public void logout(String refreshToken) {
+        keycloakService.logoutUser(refreshToken);
+    }
 
 
+    public UserResponse getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String email = jwt.getClaim("email");
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapToUserResponse(user);
+    }
+
+
+    public AuthResponse login(LoginRequest request) {
+        // Authenticate with Keycloak
+        Map<String, Object> tokenResponse = keycloakService.authenticateUser(request);
+
+        // Get user from database
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return AuthResponse.builder()
+                .accessToken((String) tokenResponse.get("access_token"))
+                .refreshToken((String) tokenResponse.get("refresh_token"))
+                .expiresIn(((Number) tokenResponse.get("expires_in")).longValue())
+                .tokenType((String) tokenResponse.get("token_type"))
+                .user(mapToUserResponse(user))
+                .build();
     }
 
     private UserResponse mapToUserResponse(User user) {
